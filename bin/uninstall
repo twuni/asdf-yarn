@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -o nounset -o pipefail -o errexit
+IFS=$'\t\n'
+
+asdf_yarn_fail() {
+  >&2 echo "⛔ $*"
+  exit 1
+}
+
+asdf_yarn_uninstall() {
+  rm -fR "${ASDF_INSTALL_PATH}"
+}
+
+[ -z "${ASDF_INSTALL_PATH}" ] && asdf_yarn_fail "No installation directory was provided. Are you running this command via asdf? Try running 'asdf uninstall yarn <version>'"
+
+asdf_yarn_uninstall $*
