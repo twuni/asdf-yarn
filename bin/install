@@ -44,8 +44,11 @@ asdf_yarn_install() {
     rm -f "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc"
   )
 
+  # Remove existing install directory, if any
+  rm -fR "${ASDF_INSTALL_PATH}"
+
   # Finish the installation
-  mv --no-target-directory "${ASDF_YARN_DIR}" "${ASDF_INSTALL_PATH}"
+  mv "${ASDF_YARN_DIR}" "${ASDF_INSTALL_PATH}"
 }
 
 [ "${ASDF_INSTALL_TYPE}" == 'ref' ] && asdf_yarn_fail "This plugin does not support installing by ref."

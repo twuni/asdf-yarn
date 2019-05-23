@@ -1,9 +1,11 @@
-language: nodejs
+language: node_js
+node_js:
+- 12.2.0
 script:
-  - asdf plugin-test yarn $TRAVIS_BUILD_DIR yarn --version
+- asdf plugin-test yarn $TRAVIS_BUILD_DIR yarn --version
 before_script:
-  - git clone https://github.com/asdf-vm/asdf.git
-  - . asdf/asdf.sh
+- git clone https://github.com/asdf-vm/asdf.git
+- source asdf/asdf.sh
 os:
-  - linux
-  - osx
+- linux
+- osx
