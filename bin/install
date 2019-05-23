@@ -20,7 +20,7 @@ asdf_yarn_keyring() {
 }
 
 asdf_yarn_install() {
-  local ASDF_YARN_DIR="$(mktemp --directory asdf-yarn-XXXXXXX)"
+  local ASDF_YARN_DIR="$(mktemp --tmpdir --directory asdf-yarn-XXXXXXX)"
 
   (
     cd "${ASDF_YARN_DIR}"
@@ -45,7 +45,7 @@ asdf_yarn_install() {
   )
 
   # Finish the installation
-  mv "${ASDF_YARN_DIR}" "${ASDF_INSTALL_PATH}"
+  mv --no-target-directory "${ASDF_YARN_DIR}" "${ASDF_INSTALL_PATH}"
 }
 
 [ "${ASDF_INSTALL_TYPE}" == 'ref' ] && asdf_yarn_fail "This plugin does not support installing by ref."
