@@ -44,8 +44,13 @@ asdf_yarn_install() {
     rm -f "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc"
   )
 
-  # Remove existing install directory, if any
-  rm -fR "${ASDF_INSTALL_PATH}"
+  if [ -d "${ASDF_INSTALL_PATH}" ]; then
+    # Remove existing install directory
+    rm -fR "${ASDF_INSTALL_PATH}"
+  fi
+
+  # Create parent directory, if necessary
+  mkdir -p "$(dirname "${ASDF_INSTALL_PATH}")"
 
   # Finish the installation
   mv "${ASDF_YARN_DIR}" "${ASDF_INSTALL_PATH}"
