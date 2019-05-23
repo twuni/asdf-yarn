@@ -2,7 +2,7 @@
 
 [![Build Status][3]][4]
 
-Yarn plugin for [asdf][1] version manager
+Yarn plugin for the [asdf][1] version manager.
 
 > 💡 **Note:** This plugin validates package authenticity via [`gpg`][2].
 
