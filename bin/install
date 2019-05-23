@@ -20,7 +20,7 @@ asdf_yarn_keyring() {
 }
 
 asdf_yarn_install() {
-  local ASDF_YARN_DIR="$(mktemp --tmpdir --directory asdf-yarn-XXXXXXX)"
+  local ASDF_YARN_DIR="$(mktemp -d -t asdf-yarn-XXXXXXX)"
 
   (
     cd "${ASDF_YARN_DIR}"
