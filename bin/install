@@ -35,7 +35,7 @@ asdf_yarn_install() {
     wget -q -O - "https://dl.yarnpkg.com/debian/pubkey.gpg" | GNUPGHOME="$(asdf_yarn_keyring)" gpg --import
 
     # Verify archive signature
-    GNUPGHOME="$(asdf_yarn_keyring)" gpg --verify "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc"
+    GNUPGHOME="$(asdf_yarn_keyring)" gpg --verify "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "yarn-v${ASDF_INSTALL_VERSION}.tar.gz"
 
     # Extract archive
     tar xzf "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" --strip-components=1 --no-same-owner
