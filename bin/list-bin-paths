@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-set -o nounset -o pipefail -o errexit
-IFS=$'\t\n'
-
-echo "bin"
