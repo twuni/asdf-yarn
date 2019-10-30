@@ -14,7 +14,7 @@ If one of the commands needed is unavailable, it will let you know.
 ## Installing
 
 ```
-asdf plugin-add yarn https://github.com/twuni/asdf-yarn.git
+asdf plugin-add yarn
 ```
 
 [1]: https://asdf-vm.com/
