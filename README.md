@@ -15,6 +15,7 @@ If one of the commands needed is unavailable, it will let you know.
 
 ```
 asdf plugin-add yarn
+asdf install yarn latest
 ```
 
 [1]: https://asdf-vm.com/
