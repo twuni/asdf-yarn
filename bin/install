@@ -9,7 +9,7 @@ asdf_yarn_fail() {
 }
 
 asdf_yarn_keyring() {
-  local YARN_KEYRING="${ASDF_DIR}/keyrings/yarn"
+  local YARN_KEYRING="${ASDF_DATA_DIR:-$HOME/.asdf}/keyrings/yarn"
 
   if [ ! -d "${YARN_KEYRING}" ]; then
     mkdir -p "${YARN_KEYRING}"
