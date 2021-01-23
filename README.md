@@ -37,5 +37,5 @@ If you do not wish to opt in to v2.x, then step 1 is all you need.
 
 [1]: https://asdf-vm.com/
 [2]: https://www.openpgp.org/
-[3]: https://travis-ci.org/twuni/asdf-yarn.svg?branch=master
+[3]: https://travis-ci.org/twuni/asdf-yarn.svg?branch=main
 [4]: https://travis-ci.org/twuni/asdf-yarn
