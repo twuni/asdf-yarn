@@ -20,5 +20,5 @@ asdf install yarn latest
 
 [1]: https://asdf-vm.com/
 [2]: https://www.openpgp.org/
-[3]: https://travis-ci.org/twuni/asdf-yarn.svg?branch=master
+[3]: https://travis-ci.org/twuni/asdf-yarn.svg?branch=main
 [4]: https://travis-ci.org/twuni/asdf-yarn
