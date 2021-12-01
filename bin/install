@@ -86,5 +86,6 @@ asdf_yarn_install() {
 [ -z "${ASDF_INSTALL_PATH}" ] && asdf_yarn_fail "No installation directory was provided. Are you running this command via asdf? Try running 'asdf install yarn <version>'"
 [ -x "$(which wget)" -o -x "$(which curl)" ] || asdf_yarn_fail "Missing one of either of the following dependencies: wget, curl"
 [ -x "$(which tar)" -a -x "$(which gpg)" ] || asdf_yarn_fail "Missing one or more of the following dependencies: tar, gpg"
+echo "${ASDF_INSTALL_VERSION}" | grep '1\.22\.[6-9]' > /dev/null && asdf_yarn_fail 'yarn versions 1.22.6 through 1.22.9 are missing the `.asc`-signature key on Github, and thus cannot be verified. Please install a different version.'
 
 asdf_yarn_install $*
