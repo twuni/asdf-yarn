@@ -60,7 +60,7 @@ asdf_yarn_install() {
     asdf_yarn_download
 
     # Verify archive signature
-    GNUPGHOME="$(asdf_yarn_keyring)" gpg -q --verify "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "yarn-v${ASDF_INSTALL_VERSION}.tar.gz"
+    GNUPGHOME="$(asdf_yarn_keyring)" gpg -q --verify "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" 2>/dev/null
 
     # Extract archive
     tar xzf "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" --strip-components=1 --no-same-owner
