@@ -8,6 +8,31 @@ asdf_yarn_fail() {
   exit 1
 }
 
+asdf_yarn_progress() {
+  >&2 printf "\e[32m"
+  if [[ "$1" -gt 0 ]]; then
+    for i in $(seq 1 "$1"); do
+      >&2 printf "█"
+    done
+  fi
+  >&2 printf "\e[2m"
+  if [[ "$1" -lt 5 ]]; then
+    for i in $(seq "$1" 4); do
+      >&2 printf "█"
+    done
+  fi
+  >&2 printf "\e[0m "
+}
+
+asdf_yarn_progress_clear() {
+  >&2 printf "\b\b\b\b\b\b"
+}
+
+asdf_yarn_progress_step() {
+  asdf_yarn_progress_clear
+  asdf_yarn_progress "$@"
+}
+
 asdf_yarn_keyring() {
   local YARN_KEYRING="${ASDF_DATA_DIR:-$HOME/.asdf}/keyrings/yarn"
 
@@ -21,24 +46,24 @@ asdf_yarn_keyring() {
 
 asdf_yarn_download_wget() {
   # Download archive
-  wget -O "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz"
+  wget -q -O "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz" || asdf_yarn_fail 'failed to download archive'
 
   # Download archive signature
-  wget -O "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc"
+  wget -q -O "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" || asdf_yarn_fail 'failed to download signature'
 
   # Download and import signing key
-  wget -q -O - "https://dl.yarnpkg.com/debian/pubkey.gpg" | GNUPGHOME="$(asdf_yarn_keyring)" gpg --import
+  wget -q -O - "https://dl.yarnpkg.com/debian/pubkey.gpg" | GNUPGHOME="$(asdf_yarn_keyring)" gpg -q --import || asdf_yarn_fail 'failed to download signing key'
 }
 
 asdf_yarn_download_curl() {
   # Download archive
-  curl -sSL -o "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz"
+  curl -sSL -o "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz" || asdf_yarn_fail 'failed to download archive'
 
   # Download archive signature
-  curl -sSL -o "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc"
+  curl -sSL -o "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" || asdf_yarn_fail 'failed to download signature'
 
   # Download and import signing key
-  curl -sSL "https://dl.yarnpkg.com/debian/pubkey.gpg" | GNUPGHOME="$(asdf_yarn_keyring)" gpg --import
+  curl -sSL "https://dl.yarnpkg.com/debian/pubkey.gpg" | GNUPGHOME="$(asdf_yarn_keyring)" gpg -q --import || asdf_yarn_fail 'failed to download signing key'
 }
 
 asdf_yarn_download() {
@@ -52,22 +77,29 @@ asdf_yarn_download() {
 }
 
 asdf_yarn_install() {
+  >&2 printf "🧶 yarn ${ASDF_INSTALL_VERSION} "
   local ASDF_YARN_DIR="$(mktemp -d -t asdf-yarn-XXXXXXX)"
 
   (
     cd "${ASDF_YARN_DIR}"
 
+    asdf_yarn_progress 0
     asdf_yarn_download
 
+    asdf_yarn_progress_step 1
     # Verify archive signature
-    GNUPGHOME="$(asdf_yarn_keyring)" gpg --verify "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "yarn-v${ASDF_INSTALL_VERSION}.tar.gz"
+    GNUPGHOME="$(asdf_yarn_keyring)" gpg -q --verify "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" 2>/dev/null || asdf_yarn_fail 'failed to verify signature'
 
+    asdf_yarn_progress_step 2
     # Extract archive
     tar xzf "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" --strip-components=1 --no-same-owner
 
+    asdf_yarn_progress_step 3
     # Remove downloaded files
     rm -f "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc"
   )
+
+  asdf_yarn_progress_step 4
 
   if [ -d "${ASDF_INSTALL_PATH}" ]; then
     # Remove existing install directory
@@ -79,6 +111,9 @@ asdf_yarn_install() {
 
   # Finish the installation
   mv "${ASDF_YARN_DIR}" "${ASDF_INSTALL_PATH}"
+
+  asdf_yarn_progress_step 5
+  echo '✅ installed!'
 }
 
 [ "${ASDF_INSTALL_TYPE}" == 'ref' ] && asdf_yarn_fail "This plugin does not support installing by ref."
