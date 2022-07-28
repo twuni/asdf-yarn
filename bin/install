@@ -21,13 +21,13 @@ asdf_yarn_keyring() {
 
 asdf_yarn_download_wget() {
   # Download archive
-  wget -O "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz"
+  wget -q -O "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz"
 
   # Download archive signature
-  wget -O "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc"
+  wget -q -O "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc"
 
   # Download and import signing key
-  wget -q -O - "https://dl.yarnpkg.com/debian/pubkey.gpg" | GNUPGHOME="$(asdf_yarn_keyring)" gpg --import
+  wget -q -O - "https://dl.yarnpkg.com/debian/pubkey.gpg" | GNUPGHOME="$(asdf_yarn_keyring)" gpg -q --import
 }
 
 asdf_yarn_download_curl() {
@@ -38,7 +38,7 @@ asdf_yarn_download_curl() {
   curl -sSL -o "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc"
 
   # Download and import signing key
-  curl -sSL "https://dl.yarnpkg.com/debian/pubkey.gpg" | GNUPGHOME="$(asdf_yarn_keyring)" gpg --import
+  curl -sSL "https://dl.yarnpkg.com/debian/pubkey.gpg" | GNUPGHOME="$(asdf_yarn_keyring)" gpg -q --import
 }
 
 asdf_yarn_download() {
@@ -60,7 +60,7 @@ asdf_yarn_install() {
     asdf_yarn_download
 
     # Verify archive signature
-    GNUPGHOME="$(asdf_yarn_keyring)" gpg --verify "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "yarn-v${ASDF_INSTALL_VERSION}.tar.gz"
+    GNUPGHOME="$(asdf_yarn_keyring)" gpg -q --verify "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "yarn-v${ASDF_INSTALL_VERSION}.tar.gz"
 
     # Extract archive
     tar xzf "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" --strip-components=1 --no-same-owner
