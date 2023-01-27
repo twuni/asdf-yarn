@@ -52,7 +52,8 @@ asdf_yarn_download() {
 }
 
 asdf_yarn_install() {
-  local ASDF_YARN_DIR="$(mktemp -d -t asdf-yarn-XXXXXXX)"
+  local ASDF_YARN_DIR
+  ASDF_YARN_DIR=$(mktemp -d -t asdf-yarn-XXXXXXX)
 
   (
     cd "${ASDF_YARN_DIR}"
@@ -84,7 +85,8 @@ asdf_yarn_install() {
 [ "${ASDF_INSTALL_TYPE}" == 'ref' ] && asdf_yarn_fail "This plugin does not support installing by ref."
 [ -z "${ASDF_INSTALL_VERSION}" ] && asdf_yarn_fail "Unspecified install version."
 [ -z "${ASDF_INSTALL_PATH}" ] && asdf_yarn_fail "No installation directory was provided. Are you running this command via asdf? Try running 'asdf install yarn <version>'"
-[ -x "$(which wget)" -o -x "$(which curl)" ] || asdf_yarn_fail "Missing one of either of the following dependencies: wget, curl"
-[ -x "$(which tar)" -a -x "$(which gpg)" ] || asdf_yarn_fail "Missing one or more of the following dependencies: tar, gpg"
+[ -x "$(which wget)" ] || [ -x "$(which curl)" ] || asdf_yarn_fail "Missing one of either of the following dependencies: wget, curl"
+[ -x "$(which tar)" ] || asdf_yarn_fail "Missing the following dependency: tar"
+[ -x "$(which gpg)" ] || asdf_yarn_fail "Missing the following dependency: gpg"
 
-asdf_yarn_install $*
+asdf_yarn_install "$*"
