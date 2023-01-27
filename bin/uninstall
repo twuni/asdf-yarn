@@ -14,4 +14,4 @@ asdf_yarn_uninstall() {
 
 [ -z "${ASDF_INSTALL_PATH}" ] && asdf_yarn_fail "No installation directory was provided. Are you running this command via asdf? Try running 'asdf uninstall yarn <version>'"
 
-asdf_yarn_uninstall $*
+asdf_yarn_uninstall "$*"
