@@ -3,10 +3,17 @@
 set -o nounset -o pipefail -o errexit
 IFS=$'\t\n'
 
-git ls-remote --refs --tags "https://github.com/yarnpkg/yarn.git" \
+VERSIONS_CLASSIC="$(git ls-remote --refs --tags "https://github.com/yarnpkg/yarn.git" \
 | sed -E 's|^.+refs/tags/||g' \
 | grep -E '^v' \
 | sort --version-sort \
 | sed -E 's|^v||g' \
 | grep -Ev '^0\.' \
-| xargs
+| xargs)"
+
+VERSIONS_BERRY="$(git ls-remote --refs --tags "https://github.com/yarnpkg/berry.git" \
+| grep '@yarnpkg/cli' \
+| sed -E 's|^.+refs/tags/@yarnpkg/cli/||g' \
+| xargs)"
+
+echo "$VERSIONS_CLASSIC $VERSIONS_BERRY"
