@@ -8,7 +8,7 @@ asdf_yarn_fail() {
   exit 1
 }
 
-asdf_yarn_keyring() {
+asdf_yarn_v1_keyring() {
   local YARN_KEYRING="${ASDF_DATA_DIR:-$HOME/.asdf}/keyrings/yarn"
 
   if [ ! -d "${YARN_KEYRING}" ]; then
@@ -19,7 +19,7 @@ asdf_yarn_keyring() {
   echo "${YARN_KEYRING}"
 }
 
-asdf_yarn_download_wget() {
+asdf_yarn_v1_download_wget() {
   # Download archive
   wget -O "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz"
 
@@ -27,10 +27,10 @@ asdf_yarn_download_wget() {
   wget -O "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc"
 
   # Download and import signing key
-  wget -q -O - "https://dl.yarnpkg.com/debian/pubkey.gpg" | GNUPGHOME="$(asdf_yarn_keyring)" gpg --import
+  wget -q -O - "https://dl.yarnpkg.com/debian/pubkey.gpg" | GNUPGHOME="$(asdf_yarn_v1_keyring)" gpg --import
 }
 
-asdf_yarn_download_curl() {
+asdf_yarn_v1_download_curl() {
   # Download archive
   curl -sSL -o "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz"
 
@@ -38,29 +38,29 @@ asdf_yarn_download_curl() {
   curl -sSL -o "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "https://classic.yarnpkg.com/downloads/${ASDF_INSTALL_VERSION}/yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc"
 
   # Download and import signing key
-  curl -sSL "https://dl.yarnpkg.com/debian/pubkey.gpg" | GNUPGHOME="$(asdf_yarn_keyring)" gpg --import
+  curl -sSL "https://dl.yarnpkg.com/debian/pubkey.gpg" | GNUPGHOME="$(asdf_yarn_v1_keyring)" gpg --import
 }
 
-asdf_yarn_download() {
+asdf_yarn_v1_download() {
   if [ -x "$(which wget)" ]; then
-    asdf_yarn_download_wget
+    asdf_yarn_v1_download_wget
   else
     if [ -x "$(which curl)" ]; then
-      asdf_yarn_download_curl
+      asdf_yarn_v1_download_curl
     fi
   fi
 }
 
-asdf_yarn_install() {
+asdf_yarn_v1_install() {
   local ASDF_YARN_DIR="$(mktemp -d -t asdf-yarn-XXXXXXX)"
 
   (
     cd "${ASDF_YARN_DIR}"
 
-    asdf_yarn_download
+    asdf_yarn_v1_download
 
     # Verify archive signature
-    GNUPGHOME="$(asdf_yarn_keyring)" gpg --verify "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "yarn-v${ASDF_INSTALL_VERSION}.tar.gz"
+    GNUPGHOME="$(asdf_yarn_v1_keyring)" gpg --verify "yarn-v${ASDF_INSTALL_VERSION}.tar.gz.asc" "yarn-v${ASDF_INSTALL_VERSION}.tar.gz"
 
     # Extract archive
     tar xzf "yarn-v${ASDF_INSTALL_VERSION}.tar.gz" --strip-components=1 --no-same-owner
@@ -79,6 +79,44 @@ asdf_yarn_install() {
 
   # Finish the installation
   mv "${ASDF_YARN_DIR}" "${ASDF_INSTALL_PATH}"
+}
+
+asdf_yarn_v2_plus_install() {
+  local ASDF_YARN_DIR="$(mktemp -d -t asdf-yarn-XXXXXXX)"
+
+  (
+    cd "${ASDF_YARN_DIR}"
+
+    if [ -x "$(which wget)" ]; then
+      wget -O yarn "https://repo.yarnpkg.com/${ASDF_INSTALL_VERSION}/packages/yarnpkg-cli/bin/yarn.js"
+    else
+      if [ -x "$(which curl)" ]; then
+        curl  -sSL -o yarn "https://repo.yarnpkg.com/${ASDF_INSTALL_VERSION}/packages/yarnpkg-cli/bin/yarn.js"
+      fi
+    fi
+  )
+
+  if [ -d "${ASDF_INSTALL_PATH}" ]; then
+    # Remove existing install directory
+    rm -fR "${ASDF_INSTALL_PATH}"
+  fi
+
+  # Create parent directory, if necessary
+  mkdir -p "$(dirname "${ASDF_INSTALL_PATH}")"
+
+  # Finish the installation
+  chmod +x "${ASDF_YARN_DIR}/yarn"
+  mkdir -p "${ASDF_INSTALL_PATH}/bin"
+  mv "${ASDF_YARN_DIR}/yarn" "${ASDF_INSTALL_PATH}/bin/yarn"
+}
+
+asdf_yarn_install(){
+  local MAJOR_VERSION="$(printf %.1s $ASDF_INSTALL_VERSION)"
+  if [ "$MAJOR_VERSION" = "1" ]; then
+    asdf_yarn_v1_install
+  else
+    asdf_yarn_v2_plus_install
+  fi
 }
 
 [ "${ASDF_INSTALL_TYPE}" == 'ref' ] && asdf_yarn_fail "This plugin does not support installing by ref."
